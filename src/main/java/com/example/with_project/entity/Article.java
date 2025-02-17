@@ -27,8 +27,6 @@ public class Article {
     @Column(name = "content", nullable = false)
     private String content;
 
-
-
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;

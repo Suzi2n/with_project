@@ -1,5 +1,6 @@
 package com.example.with_project.config.jwt;
 
+import com.example.with_project.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +10,7 @@ import com.example.with_project.entity.UserEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -21,6 +23,7 @@ import java.util.Set;
 public class TokenProvider {
 
     private final JwtProperties jwtProperties;
+    private final UserRepository userRepository; // 추가  2025-02-11
 
     public String generateToken(UserEntity user, Duration expiredAt) {
         Date now = new Date();
@@ -61,6 +64,26 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject
                 (), "", authorities), token, authorities);
     }
+
+
+/*
+    public Authentication getAuthentication(String token) {
+        Claims claims = getClaims(token);
+        // 토큰 생성 시 subject로 email을 저장했으므로 이를 이용하여 사용자 조회
+        String email = claims.getSubject();
+
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        // UserEntity가 이미 UserDetails를 구현하므로 그대로 principal로 사용 가능
+        return new UsernamePasswordAuthenticationToken(
+                userEntity,
+                token,
+                userEntity.getAuthorities()
+        );
+    }
+
+ */
 
     public Long getUserId(String token) {
         Claims claims = getClaims(token);

@@ -5,7 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AddUserRequest {
+public class AddUserRequest {  // 자체 로그인 회원가입 API의 RequestBody
     private String email;
     private String password;
+    private String nickname;
 }

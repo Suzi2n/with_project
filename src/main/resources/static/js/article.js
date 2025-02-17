@@ -1,3 +1,4 @@
+
 // 삭제 기능
 const deleteButton = document.getElementById('delete-btn');
 
@@ -68,57 +69,115 @@ if (createButton) {
     });
 }
 
+
+
+/*
 // 로그아웃 기능
 const logoutButton = document.getElementById('logout-btn');
 
 if (logoutButton) {
     logoutButton.addEventListener('click', event => {
-        function success() {
-            // 로컬 스토리지에 저장된 액세스 토큰을 삭제
-            localStorage.removeItem('access_token');
+        console.log("✅ 로그아웃 버튼이 클릭됨"); // 이벤트 실행 여부 확인
 
-            // 쿠키에 저장된 리프레시 토큰을 삭제
-            deleteCookie('refresh_token');
+
+        const loginTypeInput = document.getElementById('login-type');
+
+        if (!loginTypeInput) {
+            console.error("❌ login-type 요소를 찾을 수 없습니다.");
+            return;
+        }
+
+
+        // 서버에서 전달된 로그인 방식을 가져옵니다.
+        const loginType = loginTypeInput.value;
+
+        if (loginType === 'oauth') {
+            // OAuth 로그아웃 처리
+            oauthLogout();
+        } else if (loginType === 'regular') {
+            // 일반 로그인 로그아웃 처리
+            regularLogout();
+        }
+    });
+}
+
+
+
+ */
+
+$(document).on('click', '#logout-btn', function() {
+    console.log("✅ 로그아웃 버튼이 클릭됨"); // 이벤트 실행 여부 확인
+
+    const loginTypeInput = document.getElementById('login-type');
+
+    if (!loginTypeInput) {
+        console.error("❌ login-type 요소를 찾을 수 없습니다.");
+        return;
+    }
+
+    // 서버에서 전달된 로그인 방식을 가져옵니다.
+    const loginType = loginTypeInput.value;
+
+    if (loginType === 'oauth') {
+        console.log("🔄 OAuth 로그아웃 진행");
+        oauthLogout();
+    } else if (loginType === 'regular') {
+        console.log("🔄 일반 로그아웃 진행");
+        regularLogout();
+    } else {
+        console.error("❌ 알 수 없는 로그인 타입:", loginType);
+    }
+});
+
+
+function oauthLogout() {
+    console.log("🔄 OAuth 로그아웃 요청 중...");
+    function success() {
+        // OAuth 로그아웃 성공 시 처리
+        alert('OAuth 로그아웃이 완료되었습니다.');
+        localStorage.removeItem('access_token');
+        deleteCookie('refresh_token');
+        location.replace('/login');
+    }
+
+    function fail() {
+        alert('OAuth 로그아웃에 실패했습니다.');
+    }
+
+    // OAuth 로그아웃 요청을 서버로 보냅니다.
+    httpRequest('DELETE', '/api/refresh-token', null, success, fail);
+}
+
+
+function regularLogout() {
+    fetch('/logout', {
+        method: 'POST',
+        // 세션 쿠키가 정상적으로 전송되려면 필요할 수도 있음 (Cross-Site 요청의 경우)
+        credentials: 'include'
+    }).then(response => {
+        // Spring Security 기본 설정에서는 로그아웃 성공 시 302 리다이렉트가 발생
+        if (response.ok || response.status === 302) {
+            alert('일반 로그아웃이 완료되었습니다.');
             location.replace('/login');
+        } else {
+            alert('일반 로그아웃에 실패했습니다.');
         }
-        function fail() {
-            alert('로그아웃 실패했습니다.');
-        }
-
-        httpRequest('DELETE','/api/refresh-token', null, success, fail);
     });
 }
 
-// 쿠키를 가져오는 함수
-function getCookie(key) {
-    var result = null;
-    var cookie = document.cookie.split(';');
-    cookie.some(function (item) {
-        item = item.replace(' ', '');
 
-        var dic = item.split('=');
 
-        if (key === dic[0]) {
-            result = dic[1];
-            return true;
-        }
-    });
-
-    return result;
-}
 
 // 쿠키를 삭제하는 함수
 function deleteCookie(name) {
     document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-
-
 // HTTP 요청을 보내는 함수
 function httpRequest(method, url, body, success, fail) {
     fetch(url, {
         method: method,
-        headers: { // 로컬 스토리지에서 액세스 토큰 값을 가져와 헤더에 추가
+        headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token'),
             'Content-Type': 'application/json',
         },
@@ -144,7 +203,7 @@ function httpRequest(method, url, body, success, fail) {
                         return res.json();
                     }
                 })
-                .then(result => { // 재발급이 성공하면 로컬 스토리지값을 새로운 액세스 토큰으로 교체
+                .then(result => {
                     localStorage.setItem('access_token', result.accessToken);
                     httpRequest(method, url, body, success, fail);
                 })
@@ -153,4 +212,22 @@ function httpRequest(method, url, body, success, fail) {
             return fail();
         }
     });
+}
+
+// 쿠키를 가져오는 함수
+function getCookie(key) {
+    var result = null;
+    var cookie = document.cookie.split(';');
+    cookie.some(function (item) {
+        item = item.replace(' ', '');
+
+        var dic = item.split('=');
+
+        if (key === dic[0]) {
+            result = dic[1];
+            return true;
+        }
+    });
+
+    return result;
 }

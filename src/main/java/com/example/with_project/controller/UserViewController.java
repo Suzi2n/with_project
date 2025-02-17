@@ -5,24 +5,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class UserViewController {
-       // 로그인 뷰
+
+
+    // 로그인 뷰
     @GetMapping("/login")
     public String login(){
         return "login";
     }
 
-
-    /*
-    // OAuth 로그인 뷰
-    @GetMapping("/login")
-    public String login(){
-        return "oauthLogin";
-    }
-
-
-     */
     @GetMapping("/signup")
     public String signup(){
         return "signup";
+    }
+
+
+    // 홈 뷰
+    @GetMapping("/home")
+    public String home(){
+        return "home";
     }
 }

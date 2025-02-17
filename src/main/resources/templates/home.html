@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity5"
+      lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - WITH </title>
+
+    <!-- 구글 폰트 (선택) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+
+
+
+    <!-- 커스텀 CSS -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        /* 네비게이션 바 */
+        nav.navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        nav a.navbar-brand {
+            font-weight: bold;
+        }
+
+        /* Hero 섹션 */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 450px; /* 필요에 따라 높이 조절 */
+            background: url('/img/main_image.png') no-repeat center center;
+
+            background-size: cover;
+            display: flex;
+            align-items: center;
+        }
+        .hero .hero-content {
+            width: 100%;
+            text-align: center;
+            color: #fff;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin-top: 15px;
+            margin-bottom: 30px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 검색 폼 */
+        .search-form {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .search-form input.form-control {
+            margin: 5px;
+            flex: 1; /* 같은 크기로 배분 */
+            min-width: 120px;
+        }
+        .search-form button.btn-search {
+            margin: 5px;
+            min-width: 120px;
+        }
+
+        /* 푸터 */
+        footer {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            text-align: center;
+        }
+        footer p {
+            margin: 0;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        /* 반응형 (필요하면 조정) */
+        @media (max-width: 768px) {
+            .hero {
+                height: 300px;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+
+
+        /* 햄버거 메뉴 CSS */
+        /* 메뉴 컨테이너 (햄버거 버튼 아래에 위치) */
+        .menu-popup {
+            position: absolute;
+            top: 50px; /* 햄버거 버튼 아래에 위치하도록 조정 */
+            right: 10px; /* 버튼과 약간의 여백 */
+            width: 200px;
+            background-color: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px 0;
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            z-index: 9999; /* 항상 최상위에 위치 */
+        }
+
+        /* 메뉴 리스트 스타일 */
+        .menu-popup ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-popup ul li {
+            padding: 10px 20px;
+        }
+
+        .menu-popup ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            display: block;
+        }
+
+        .menu-popup ul li:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* 햄버거 버튼 스타일 */
+        #menu-btn {
+            font-size: 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            position: relative; /* 부모 기준점 설정 */
+            z-index: 10000; /* 버튼도 최상위에 위치 */
+        }
+
+        /* 애니메이션 효과 */
+        .menu-popup.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+<!-- 네비게이션 바 -->
+<nav class="navbar navbar-expand-md navbar-light">
+    <div class="container">
+        <!-- 로고 / 브랜드명 -->
+        <a class="navbar-brand" th:href="@{/}">WITH</a>
+
+        <!-- 네비게이션 메뉴 -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <p>현재 로그인 타입: <span th:text="${session.loginType}">로그인 타입 없음</span></p>
+            <ul class="navbar-nav ml-auto">
+
+                <!-- 로그인 상태에 따른 버튼 변경 -->
+                <th:block th:if="${session.loginType != null}">
+                    <!-- 로그인 상태일 때: 로그아웃 버튼 -->
+                    <a class="btn btn-secondary" th:href="@{/logout}">로그아웃</a>
+                    <!-- <input type="hidden" id="login-type" th:value="${session.loginType}" />  -->
+                   <!-- <button type="button" class="btn btn-secondary" id="logout-btn">로그아웃</button> -->
+                </th:block>
+                <th:block th:if="${session.loginType == null}">
+                    <!-- 로그아웃 상태일 때: 로그인 / 회원가입 버튼 -->
+                    <a class="btn btn-secondary ml-2" th:href="@{/login}">로그인/회원가입</a>
+
+                </th:block>
+
+                <!-- 햄버거 버튼 (메뉴 열기) -->
+                <button class="btn btn-light ml-2" id="menu-btn">
+                    ☰
+                </button>
+
+                <!-- 작은 흰색 메뉴 팝업 -->
+                <div id="menu-popup" class="menu-popup">
+                    <ul>
+                        <li><a th:href="@{/lodging/register}">숙소 등록</a></li>
+                        <li><a th:href="@{/search}">숙소 찾기</a></li>
+                        <li><a th:href="@{/profile}">마이페이지</a></li>
+                       <!-- <li><a th:href="@{/logout}">로그아웃</a></li>  -->
+                    </ul>
+                </div>
+
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+
+<!-- Hero 섹션 -->
+<section class="hero">
+    <div class="container hero-content">
+        <h1>Welcome to WITH</h1>
+        <p>여행을 계획하고, 잊지 못할 순간을 만들어보세요.</p>
+
+        <!-- 검색 폼 -->
+        <form class="search-form" action="#" method="GET">
+            <!-- Where -->
+            <input
+                    type="text"
+                    name="where"
+                    placeholder="Where"
+                    class="form-control"
+                    required
+            />
+            <!-- When (체크인) -->
+            <input
+                    type="date"
+                    name="checkin"
+                    class="form-control"
+                    required
+            />
+            <!-- Checkout (체크아웃) -->
+            <input
+                    type="date"
+                    name="checkout"
+                    class="form-control"
+                    required
+            />
+
+            <!-- 검색 버튼 -->
+            <button
+                    type="submit"
+                    class="btn btn-primary btn-search"
+            >
+                Search
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- 기타 컨텐츠를 추가할 수 있는 영역 -->
+<!--
+<div class="container my-5">
+    <h2>추천 여행지</h2>
+    ...
+</div>
+-->
+
+<!-- 푸터 -->
+<footer>
+    <div class="container">
+        <p>&copy; 2025 WITH - All Rights Reserved</p>
+    </div>
+</footer>
+
+<!-- JS (Bootstrap, jQuery 등) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+<script src="/js/logout.js"></script>
+<script src="/js/token.js"></script>
+<script src="/js/menubar.js"></script>
+</body>
+</html>
