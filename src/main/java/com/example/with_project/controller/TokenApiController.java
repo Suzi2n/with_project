@@ -7,6 +7,8 @@ import com.example.with_project.service.RefreshTokenService;
 import com.example.with_project.service.TokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,10 +29,15 @@ public class TokenApiController {
     }
 
     @DeleteMapping("/api/refresh-token")
-    public ResponseEntity deleteRefreshToken() {
-        refreshTokenService.delete();
 
-        return ResponseEntity.ok()
-                .build();
+    public ResponseEntity<Void> deleteRefreshToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        refreshTokenService.delete(); // 토큰 삭제 로직 호출
+        return ResponseEntity.ok().build();
     }
 }

@@ -74,7 +74,20 @@
 
         .social-buttons img {
             height: 40px;
+            width: 180px;
         }
+
+        .social-buttons {
+            display: flex;
+            flex-direction: column;  /* 세로 배치 */
+            align-items: center;     /* 가로 중앙 정렬 */
+        }
+
+        /* 각 이미지(버튼) 사이에 margin 추가 */
+        .social-buttons a {
+            margin: 8px 0;
+        }
+
     </style>
 </head>
 <body>
@@ -85,6 +98,8 @@
 
         <form action="/login" method="POST">
             <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
+            <input type="hidden" id="login-type" th:value="${session.loginType}" />   <!-- loginType 추가 -->
+
             <div class="form-group">
                 <input type="text" class="form-control" placeholder="Username" name="username" required>
             </div>
@@ -102,9 +117,16 @@
             <a href="/oauth2/authorization/google">
                 <img src="/img/google.png" alt="Google">
             </a>
-            <button>Kakao</button>
-            <button>Naver</button>
+            <a href="/oauth2/authorization/kakao">
+                <img src="/img/kakao.png" alt="Kakao">
+            </a>
+            <a href="/oauth2/authorization/naver">
+                <img src="/img/naver.png" alt="Naver">
+            </a>
         </div>
+
+    </div>
+
     </div>
 </div>
 

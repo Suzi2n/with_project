@@ -32,13 +32,7 @@ public class RegisterController {     // 참고자료에서의 3-2. 컨트롤러
             return "redirect:/signup?error=unknown"; // 기타 에러 처리
         }
     }
-    // 참고자료의 5. 로그아웃 구현  - 로그아웃 메소드 추가
-    @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response){
-        new SecurityContextLogoutHandler().logout(request, response,
-                SecurityContextHolder.getContext().getAuthentication());
-        return "redirect:/login";
-    }
+
 
 
 }

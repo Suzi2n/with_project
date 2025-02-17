@@ -1,5 +1,6 @@
 package com.example.with_project.config.oauth;
 
+import com.example.with_project.config.oauth.userinfo.CustomOAuth2User;
 import com.example.with_project.entity.UserEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +38,19 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        UserEntity user = userService.findByEmail((String) oAuth2User.getAttributes().get("email"));
+
+        // 1) Principal 캐스팅
+        CustomOAuth2User customUser = (CustomOAuth2User) authentication.getPrincipal();
+
+        // 2) 이메일 추출
+        String email = customUser.getEmail();
+
+        // 3) DB에서 회원 정보 조회
+        UserEntity user = userService.findByEmail(email);
+
+
+        // 세션에 loginType="oauth" 설정 (프론트에서 소셜 로그인 여부 파악 가능)   추가 ---> 2025.02.10
+        request.getSession().setAttribute("loginType", "oauth");
 
 
         // 리프레시 토큰 생성 -> 저장 -> 쿠키에 저장

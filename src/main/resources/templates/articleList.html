@@ -28,8 +28,10 @@
         <br>
     </div>
 
+    <input type="hidden" id="login-type" th:value="${session.loginType}" />   <!-- loginType 추가 -->
     <button type="button" class="btn btn-secondary" id="logout-btn">로그아웃</button>
 </div>
+
 
 <script src="/js/token.js"></script>
 <script src="/js/article.js"></script>

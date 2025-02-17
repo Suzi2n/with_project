@@ -1,20 +1,7 @@
 package com.example.with_project.entity;
 
-
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-////
-
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +13,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class UserEntity implements UserDetails{   // UserDetails를 상속받아 인증 객체로 사용.. 책의 User.java 파일
+@Builder
+@AllArgsConstructor
+public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,22 +28,42 @@ public class UserEntity implements UserDetails{   // UserDetails를 상속받아
     @Column(name = "password")
     private String password;
 
-    @Column(name = "nickname", unique = true)
+    @Column(name = "nickname")         // 닉네임 중복XXX (unique = True)   // 닉네임 중복 허용 (unique = True 지우기)
     private String nickname;
 
+    private String imageUrl; // 프로필 이미지
 
-    @Builder
-    public UserEntity(String email, String password, String nickname) {
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
+    // 주석 해제
+    @Enumerated(EnumType.STRING)
+    private Role role; // com.example.with_project.Role 사용
+
+    // 유저 권한 설정 메소드
+    public void authorizeUser() {
+        this.role = Role.USER;
     }
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType; // KAKAO, NAVER, GOOGLE
+
+    private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
+
+    private String refreshToken; // 리프레시 토큰
+/*
+
+    @Override // 권한 반환
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.getKey()));
+    }
+
+ */
 
 
     @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("user"));
     }
+
+
 
     @Override
     public String getUsername() {
@@ -66,36 +75,28 @@ public class UserEntity implements UserDetails{   // UserDetails를 상속받아
         return password;
     }
 
-    // 계정 만료 여부 반환
     @Override
-    public boolean isAccountNonExpired(){
-        // 만료되었는지 확인하는 로직
-        return true; // true -> 만료되지 않음
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    // 계정 잠금 여부 반환
     @Override
-    public boolean isAccountNonLocked(){
-        return true; // true -> 잠금되지 않음
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    // 패스워드 만료 여부 반환
     @Override
-    public boolean isCredentialsNonExpired(){
-        return true; // true -> 만료되지 않음
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    // 계정 사용 가능 여부 변환
     @Override
-    public boolean isEnabled(){
-        return true; // true -> 사용 가능
+    public boolean isEnabled() {
+        return true;
     }
 
-    // 사용자 이름 변경
     public UserEntity update(String nickname) {
         this.nickname = nickname;
         return this;
     }
-
 }
-
