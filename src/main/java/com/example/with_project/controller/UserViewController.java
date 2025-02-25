@@ -24,4 +24,9 @@ public class UserViewController {
     public String home(){
         return "home";
     }
+
+    @GetMapping("/article")
+    public String article() {
+        return "article"; // templates 폴더 내 article.html 파일을 렌더링
+    }
 }

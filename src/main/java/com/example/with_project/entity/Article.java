@@ -38,15 +38,32 @@ public class Article {
     @Column(name = "author", nullable = false)
     private String author;
 
+    // (가령) 이미지를 저장할 필드 추가   2025/02/24
+    @Column(name = "image_url")
+    private String imageUrl;
+
+
+
+
+//    @Builder
+//    public Article(String author, String title, String content) {
+//        this.author = author;
+//        this.title = title;
+//        this.content = content;
+//    }
+
+
     @Builder
-    public Article(String author, String title, String content) {
+    public Article(String author, String title, String content, String imageUrl) {
         this.author = author;
         this.title = title;
         this.content = content;
+        this.imageUrl = imageUrl;
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content, String imageUrl) {
         this.title = title;
         this.content = content;
+        this.imageUrl = imageUrl;
     }
 }
