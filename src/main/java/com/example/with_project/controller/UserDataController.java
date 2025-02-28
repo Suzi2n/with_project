@@ -17,7 +17,7 @@ public class UserDataController {
             String name = (String) attributes.get("name");  // "이수진"
             model.addAttribute("userName", name);
         }
-        return "articleList";  // articleList.html 템플릿 반환
+        return "hotelList";  // hotelList.html 템플릿 반환
     }
 
 }

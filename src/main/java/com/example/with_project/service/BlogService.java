@@ -1,13 +1,14 @@
 package com.example.with_project.service;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import com.example.with_project.dto.AddArticleRequest;
+
+import com.example.with_project.dto.AddHotelRequest;
 import com.example.with_project.dto.UpdateArticleRequest;
-import com.example.with_project.entity.Article;
+import com.example.with_project.entity.Hotel;
 import com.example.with_project.repository.BlogRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -21,78 +22,41 @@ import java.util.UUID;
 public class BlogService {
 
     private final BlogRepository blogRepository;
+    // 만약 ArticleImage에 대한 별도 Repository가 필요하다면:
+    // private final ArticleImageRepository articleImageRepository;
 
     // 예시: 로컬 디렉토리에 저장
     private static final String UPLOAD_DIR = "C:/uploads";
 
     /**
-     * 게시글 생성 (이미지 파일 포함)
+     * 게시글 생성 (다중 이미지 파일 포함)
      */
+    /*
     public Article save(AddArticleRequest request, String userName) {
-        // 1) 이미지 파일이 있으면 로컬에 업로드
-        String storedFilePath = null;
-        if (request.getImageFile() != null && !request.getImageFile().isEmpty()) {
-            storedFilePath = uploadFile(request.getImageFile());
+        // 1) DTO -> Article 엔티티 생성 (아직 ArticleImage는 없음)
+        Article article = request.toEntity(userName);
+
+        // 2) 업로드할 파일이 있다면 로컬에 저장하고, 그 경로들로 ArticleImage 엔티티 생성
+        List<MultipartFile> files = request.getFiles();
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                String storedFilePath = uploadFile(file);
+                // 로컬 업로드 후 경로 반환
+                if (storedFilePath != null) {
+                    ArticleImage articleImage = new ArticleImage(storedFilePath);
+                    // 편의 메서드를 통해 양방향 관계 설정
+                    article.addImage(articleImage);
+                }
+            }
         }
 
-        // 2) DTO -> 엔티티 변환 시 imageUrl(경로)까지 전달
-        Article article = request.toEntity(userName, storedFilePath);
-
-        // 3) DB 저장
+        // 3) Article 저장 (cascade = ALL 이면, 연관된 ArticleImage도 자동 저장)
         return blogRepository.save(article);
     }
 
-    /**
-     * 모든 게시글 조회
-     */
-    public List<Article> findAll() {
-        return blogRepository.findAll();
-    }
-
-    /**
-     * 단일 게시글 조회
-     */
-    public Article findById(long id) {
-        return blogRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
-    }
-
-    /**
-     * 게시글 삭제
-     */
-    public void delete(long id) {
-        Article article = blogRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
-
-        // 작성자 본인 여부 확인
-        authorizeArticleAuthor(article);
-        blogRepository.delete(article);
-    }
-
-    /**
-     * 게시글 수정 (이미지 파일 교체 가능)
-     */
-    public Article update(long id, UpdateArticleRequest request) {
-        Article article = blogRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
-
-        // 작성자 본인 여부 확인
-        authorizeArticleAuthor(article);
-
-        // 기존 imageUrl 가져오기
-        String newImageUrl = article.getImageUrl();
-        // 새 이미지가 업로드되었다면 파일 교체
-        if (request.getImageFile() != null && !request.getImageFile().isEmpty()) {
-            newImageUrl = uploadFile(request.getImageFile());
-        }
-
-        // 엔티티 수정 (제목, 내용, 이미지 경로)
-        article.update(
-                request.getTitle(),
-                request.getContent(),
-                newImageUrl
-        );
-        return article;
+    */
+    public Hotel save(AddHotelRequest request, String userName) {
+        return blogRepository.save(request.toEntity(userName));
     }
 
     /**
@@ -111,7 +75,10 @@ public class BlogService {
 
             // 원본 파일명에서 확장자 추출
             String originalFilename = file.getOriginalFilename();
-            String ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String ext = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                ext = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
 
             // 파일명 충돌 방지를 위해 UUID 사용
             String newFileName = UUID.randomUUID() + ext;
@@ -120,27 +87,114 @@ public class BlogService {
             // 실제 파일 저장
             file.transferTo(new File(filePath));
 
-            // DB에는 절대경로 전체 대신, 필요한 경로만 저장해도 됨
-            // ex) return "/images/" + newFileName;
-            return filePath;
+            return filePath; // or "/images/" + newFileName 등
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 실패", e);
         }
     }
 
+    // 나머지 로직(조회, 삭제, 수정) ---------------------------------
+
+    /**
+     * 모든 게시글 조회
+     */
+    public List<Hotel> findAll() {
+        return blogRepository.findAll();
+    }
+
+    /**
+     * 단일 게시글 조회
+     */
+    public Hotel findById(long id) {
+        return blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
+    }
+
+    /**
+     * 게시글 삭제
+     */
+    public void delete(long id) {
+        Hotel hotel = blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
+        authorizeArticleAuthor(hotel);
+        blogRepository.delete(hotel);
+    }
+
+    /**
+     * 게시글 수정 (이미지 파일 교체 가능) - 다중 이미지일 경우 예시
+     */
+
+        // 일단 기존꺼 재활용
+    @Transactional
+    public Hotel update(long id, UpdateArticleRequest request) {
+        Hotel hotel = blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
+
+        authorizeArticleAuthor(hotel);
+        hotel.update(request.getTitle(), request.getContent() , request.getAddress(), request.getPrice());
+
+        return hotel;
+    }
+
+    /*
+      ////////// 일단 이 기능은 주석 처리 !!!!
+
+    public Article update(long id, UpdateArticleRequest request) {
+        Article article = blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
+        authorizeArticleAuthor(article);
+
+        // 1) Article 기본 정보 수정
+        article.update(request.getTitle(), request.getContent());
+
+        // 2) 새 이미지 파일들이 온다면 → 기존 이미지들을 지우고 새로 넣거나,
+        //    또는 원하는 로직(추가만 한다든지...)으로 구현
+        if (request.getNewFiles() != null && !request.getNewFiles().isEmpty()) {
+            // 예시) 모든 기존 이미지를 제거 (orphanRemoval = true 이면 자동으로 DB에서 삭제)
+            article.getArticleImages().clear();
+
+            // 새 파일들을 업로드 후 리스트에 등록
+            for (MultipartFile newFile : request.getNewFiles()) {
+                String filePath = uploadFile(newFile);
+                if (filePath != null) {
+                    ArticleImage newImage = new ArticleImage(filePath);
+                    article.addImage(newImage);
+                }
+            }
+        }
+
+        // 3) 저장
+        return article;
+    }
+
+
+     */
+
+
     /**
      * 작성자와 현재 사용자가 일치하는지 확인
      */
-    private static void authorizeArticleAuthor(Article article) {
+    private static void authorizeArticleAuthor(Hotel hotel) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!article.getAuthor().equals(userName)) {
+        if (!hotel.getAuthor().equals(userName)) {
             throw new IllegalArgumentException("not authorized");
         }
     }
 
+
+    ////  2025/02/28    검색 기능 때문에 추가
+
+    public List<Hotel> searchHotels(String address){
+        // 필요한 경우, 날짜 및 인원수 조건도 추가로 처리
+        if(address == null || address.isEmpty()) {
+            return blogRepository.findAll();
+        } else {
+            return blogRepository.findByAddressContaining(address);
+        }
+    }
+
+
 }
-
-
 
 /*  2025/02/24 주석
 

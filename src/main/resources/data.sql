@@ -1,3 +1,3 @@
-INSERT INTO article (title, content, author, created_at, updated_at) VALUES ('제목1', '내용1', 'user1', NOW(), NOW())
-INSERT INTO article (title, content, author, created_at, updated_at) VALUES ('제목2', '내용2', 'user2', NOW(), NOW())
-INSERT INTO article (title, content, author, created_at, updated_at) VALUES ('제목3', '내용3', 'user3', NOW(), NOW())
+INSERT INTO hotel (title, content, author, address, price, created_at , updated_at) VALUES ('서울신라호텔', '내용1', 'user1', '서울', '100000', now(), now())
+INSERT INTO hotel (title, content, author, address, price, created_at , updated_at) VALUES ('호텔 센트럴베이 광안리', '내용2', 'user2', '부산', '100000', now(), now())
+INSERT INTO hotel (title, content, author, address, price, created_at , updated_at) VALUES ('네스트호텔 인천', '내용3', 'user3', '인천', '100000', now(), now())

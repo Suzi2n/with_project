@@ -166,8 +166,6 @@
     </style>
 </head>
 
-<body>
-
 <!-- 네비게이션 바 -->
 <nav class="navbar navbar-expand-md navbar-light">
     <div class="container">
@@ -184,7 +182,7 @@
                     <!-- 로그인 상태일 때: 로그아웃 버튼 -->
                     <a class="btn btn-secondary" th:href="@{/logout}">로그아웃</a>
                     <!-- <input type="hidden" id="login-type" th:value="${session.loginType}" />  -->
-                   <!-- <button type="button" class="btn btn-secondary" id="logout-btn">로그아웃</button> -->
+                    <!-- <button type="button" class="btn btn-secondary" id="logout-btn">로그아웃</button> -->
                 </th:block>
                 <th:block th:if="${session.loginType == null}">
                     <!-- 로그아웃 상태일 때: 로그인 / 회원가입 버튼 -->
@@ -203,7 +201,7 @@
                         <li><a th:href="@{/hotels}">숙소 등록</a></li>
                         <li><a th:href="@{/search}">숙소 찾기</a></li>
                         <li><a th:href="@{/profile}">마이페이지</a></li>
-                       <!-- <li><a th:href="@{/logout}">로그아웃</a></li>  -->
+                        <!-- <li><a th:href="@{/logout}">로그아웃</a></li>  -->
                     </ul>
                 </div>
 
@@ -214,74 +212,30 @@
 </nav>
 
 
-
-<!-- Hero 섹션 -->
-<section class="hero">
-    <div class="container hero-content">
-        <h1>Welcome to WITH</h1>
-        <p>여행을 계획하고, 잊지 못할 순간을 만들어보세요.</p>
-
-        <!-- 검색 폼 -->
-        <form class="search-form" action="#" method="GET">
-            <!-- Where -->
-            <input
-                    type="text"
-                    name="where"
-                    placeholder="Where"
-                    class="form-control"
-                    required
-            />
-            <!-- When (체크인) -->
-            <input
-                    type="date"
-                    name="checkin"
-                    class="form-control"
-                    required
-            />
-            <!-- Checkout (체크아웃) -->
-            <input
-                    type="date"
-                    name="checkout"
-                    class="form-control"
-                    required
-            />
-
-            <!-- 검색 버튼 -->
-            <button
-                    type="submit"
-                    class="btn btn-primary btn-search"
-            >
-                Search
-            </button>
-        </form>
+<div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <hotel>
+                    <input type="hidden" id="hotel-id" th:value="${hotel.id}">
+                    <header class="mb-4">
+                        <h1 class="fw-bolder mb-1" th:text="${hotel.title}"></h1>
+                        <div class="text-muted fst-italic mb-2" th:text="|Posted on ${#temporals.format(hotel.createdAt, 'yyyy-MM-dd HH:mm')} By ${hotel.author}|"></div>
+                    </header>
+                    <section class="mb-5">
+                        <p class="fs-5 mb-4" th:text="${hotel.content}"></p>
+                    </section>
+                    <button type="button" id="modify-btn"
+                            th:onclick="|location.href='@{/new-hotel?id={articleId}(articleId=${hotel.id})}'|"
+                            class="btn btn-primary btn-sm">수정</button>
+                    <button type="button" id="delete-btn"
+                            class="btn btn-secondary btn-sm">삭제</button>
+                </hotel>
+            </div>
+        </div>
     </div>
-</section>
-
-<!-- 기타 컨텐츠를 추가할 수 있는 영역 -->
-<!--
-<div class="container my-5">
-    <h2>추천 여행지</h2>
-    ...
-</div>
--->
-
-<!-- 푸터 -->
-<footer>
-    <div class="container">
-        <p>&copy; 2025 WITH - All Rights Reserved</p>
-    </div>
-</footer>
-
-<!-- JS (Bootstrap, jQuery 등) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+<script src="/js/hotel.js"></script>
 
-<script src="/js/logout.js"></script>
-<script src="/js/token.js"></script>
 <script src="/js/menubar.js"></script>
 </body>
-</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>객실 등록 - WITH</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; margin-top: 50px; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-light">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/home}">WITH</a>
+    </div>
+</nav>
+<div class="container">
+    <h1 class="text-center mb-4">객실 등록하기</h1>
+    <!-- hotelId를 숨은 필드로 전달 -->
+    <form th:action="@{/new-room}" method="post">
+        <input type="hidden" name="hotelId" th:value="${hotelId}" />
+        <div class="form-group">
+            <label for="name">객실 이름</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="객실 이름(번호)를 입력하세요" required>
+        </div>
+        <div class="form-group">
+            <label for="content">객실 설명</label>
+            <textarea class="form-control" id="content" name="content"  rows="4"
+                      placeholder="객실 설명을 입력하세요" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="max">수용 인원</label>
+            <div class="select-wrap">
+                <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                <select name="max" id="max" class="form-control" required>
+                    <option value="1">1 인</option>
+                    <option value="2">2 인</option>
+                    <option value="3">3 인</option>
+                    <option value="4">4 인</option>
+                    <option value="5">5 인</option>
+                    <option value="6">6 인이상</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="normalPrice">가격 (1박)</label>
+            <input type="number" class="form-control" id="normalPrice" name="normalPrice" placeholder="가격을 입력하세요" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">등록하기</button>
+        </div>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41Jsm9dcT6WolT5+Ou8m4vynwIlfR+5e405yVb0yXQ1B"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+</body>
+</html>

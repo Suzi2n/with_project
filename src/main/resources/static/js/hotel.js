@@ -4,18 +4,18 @@ const deleteButton = document.getElementById('delete-btn');
 
 if (deleteButton) {
     deleteButton.addEventListener('click', event => {
-        let id = document.getElementById('article-id').value;
+        let id = document.getElementById('hotel-id').value;
         function success() {
             alert('삭제가 완료되었습니다.');
-            location.replace('/articles');
+            location.replace('/hotels');
         }
 
         function fail() {
             alert('삭제 실패했습니다.');
-            location.replace('/articles');
+            location.replace('/hotels');
         }
 
-        httpRequest('DELETE',`/api/articles/${id}`, null, success, fail);
+        httpRequest('DELETE',`/api/hotels/${id}`, null, success, fail);
     });
 }
 
@@ -29,20 +29,22 @@ if (modifyButton) {
 
         body = JSON.stringify({
             title: document.getElementById('title').value,
-            content: document.getElementById('content').value
+            content: document.getElementById('content').value,
+            address: document.getElementById('address').value,
+            price: document.getElementById('price').value
         })
 
         function success() {
             alert('수정 완료되었습니다.');
-            location.replace(`/articles/${id}`);
+            location.replace(`/hotels/${id}`);
         }
 
         function fail() {
             alert('수정 실패했습니다.');
-            location.replace(`/articles/${id}`);
+            location.replace(`/hotels/${id}`);
         }
 
-        httpRequest('PUT',`/api/articles/${id}`, body, success, fail);
+        httpRequest('PUT',`/api/hotels/${id}`, body, success, fail);
     });
 }
 
@@ -50,22 +52,24 @@ if (modifyButton) {
 const createButton = document.getElementById('create-btn');
 
 if (createButton) {
-    // 등록 버튼을 클릭하면 /api/articles로 요청을 보낸다
+    // 등록 버튼을 클릭하면 /api/hotels 요청을 보낸다
     createButton.addEventListener('click', event => {
         body = JSON.stringify({
             title: document.getElementById('title').value,
-            content: document.getElementById('content').value
+            content: document.getElementById('content').value,
+            address: document.getElementById('address').value,
+            price: document.getElementById('price').value
         });
         function success() {
             alert('등록 완료되었습니다.');
-            location.replace('/articles');
+            location.replace('/hotels');
         };
         function fail() {
             alert('등록 실패했습니다.');
-            location.replace('/articles');
+            location.replace('/hotels');
         };
 
-        httpRequest('POST','/api/articles', body, success, fail)
+        httpRequest('POST','/api/hotels', body, success, fail)
     });
 }
 
