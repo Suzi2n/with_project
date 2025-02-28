@@ -1,8 +1,8 @@
 package com.example.with_project.controller;
 
-import com.example.with_project.dto.ArticleListViewResponse;
-import com.example.with_project.dto.ArticleViewResponse;
-import com.example.with_project.entity.Article;
+import com.example.with_project.dto.HotelListViewResponse;
+import com.example.with_project.dto.HotelViewResponse;
+import com.example.with_project.entity.Hotel;
 import com.example.with_project.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -18,34 +18,36 @@ import java.util.List;
 @Controller
 public class BlogViewController {
     private final BlogService blogService;
-    @GetMapping("/articles")
-    public String getArticles(Model model) {
-        List<ArticleListViewResponse> articles = blogService.findAll().stream()
-                .map(ArticleListViewResponse::new)
+    @GetMapping("/hotels")
+    public String getHotels(Model model) {
+        List<HotelListViewResponse> hotels = blogService.findAll().stream()
+                .map(HotelListViewResponse::new)
                 .toList();
 
-        model.addAttribute("articles", articles);
+        model.addAttribute("hotels", hotels);
 
-        return "articleList";
+        return "hotelList";
     }
 
-    @GetMapping("/articles/{id}")
-    public String getArticle(@PathVariable Long id, Model model) {
-        Article article = blogService.findById(id);
+    @GetMapping("/hotels/{id}")
+    public String getHotel(@PathVariable Long id, Model model) {
+        Hotel hotel = blogService.findById(id);
 
-        model.addAttribute("article", new ArticleViewResponse(article));
-        return "article";
+        model.addAttribute("hotel", new HotelViewResponse(hotel));
+        return "hotel";
     }
 
-    @GetMapping("/new-article")
-    public String newArticle(@RequestParam(required = false) Long id, Model model) {
+    @GetMapping("/new-hotel")
+    public String newHotel(@RequestParam(required = false) Long id, Model model) {
         if (id == null) {
-            model.addAttribute("article", new ArticleViewResponse());
+            // 새 글 작성
+            model.addAttribute("hotel", new HotelViewResponse());
         } else {
-            Article article = blogService.findById(id);
-            model.addAttribute("article", new ArticleViewResponse(article));
+            // 기존 글 불러오기
+            Hotel hotel = blogService.findById(id);
+            model.addAttribute("hotel", new HotelViewResponse(hotel));
         }
 
-        return "newArticle";
+        return "newHotel";
     }
 }

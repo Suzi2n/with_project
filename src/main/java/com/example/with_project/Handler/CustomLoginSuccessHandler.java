@@ -18,6 +18,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         System.out.println(">>> loginType in session = " + session.getAttribute("loginType"));
 
-        response.sendRedirect("/articles"); // 로그인 성공 후 이동할 페이지
+        //response.sendRedirect("/articles"); // 로그인 성공 후 이동할 페이지        (수정 2025-02-11)
+        response.sendRedirect("/home");
     }
 }

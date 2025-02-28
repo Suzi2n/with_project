@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>객실 목록 - WITH</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; margin-top: 50px; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-light">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/home}">WITH</a>
+    </div>
+</nav>
+<div class="container">
+    <h1 class="mb-4">객실 목록 for <span th:text="${hotel.title}">호텔 이름</span></h1>
+    <a th:href="@{/new-room(hotelId=${hotel.id})}" class="btn btn-primary mb-3">새 객실 등록</a>
+    <div class="row">
+<!--        <div class="col-md-4 mb-4" th:each="room : ${rooms}">-->
+<!--            <div class="card">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title" th:text="${room.name}">객실 이름</h5>-->
+<!--                    <p class="card-text">수용 인원: <span th:text="${room.max}"></span></p>-->
+<!--                    <p class="card-text">가격: <span th:text="${room.normalPrice}"></span></p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+
+        <div class="col-md-4 mb-4" th:each="room : ${rooms}">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${room.name}">객실 이름</h5>
+                    <p class="card-text">수용 인원: <span th:text="${room.max}"></span></p>
+                    <p class="card-text">가격: <span th:text="${room.normalPrice}"></span></p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <!-- 수정 버튼: 수정 폼으로 이동 -->
+                    <a th:href="@{/room/edit-room(roomId=${room.id}, hotelId=${hotel.id})}" class="btn btn-sm btn-primary">수정</a>
+                    <!-- 삭제 버튼: POST 방식으로 삭제 요청 -->
+                    <form th:action="@{/delete-room}" method="post" style="display:inline;">
+                        <input type="hidden" name="roomId" th:value="${room.id}" />
+                        <input type="hidden" name="hotelId" th:value="${hotel.id}" />
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41Jsm9dcT6WolT5+Ou8m4vynwIlfR+5e405yVb0yXQ1B"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+</body>
+</html>

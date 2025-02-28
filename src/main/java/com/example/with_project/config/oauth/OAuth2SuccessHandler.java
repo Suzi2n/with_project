@@ -1,3 +1,4 @@
+
 package com.example.with_project.config.oauth;
 
 import com.example.with_project.config.oauth.userinfo.CustomOAuth2User;
@@ -28,7 +29,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
     public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
     public static final Duration ACCESS_TOKEN_DURATION = Duration.ofDays(1);
-    public static final String REDIRECT_PATH = "/articles";
+  ///  public static final String REDIRECT_PATH = "/articles";     ////////////////// /home으로 리다이렉팅 2025-02-11
+    public static final String REDIRECT_PATH = "/home";
 
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -99,3 +101,81 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .toUriString();
     }
 }
+
+
+ /*
+////////  수정 2025-02-15
+
+package com.example.with_project.config.oauth;
+
+import com.example.with_project.config.jwt.TokenProvider;
+import com.example.with_project.config.oauth.userinfo.CustomOAuth2User;
+import com.example.with_project.entity.RefreshToken;
+import com.example.with_project.entity.UserEntity;
+import com.example.with_project.repository.RefreshTokenRepository;
+import com.example.with_project.service.UserService;
+import com.example.with_project.util.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.time.Duration;
+
+@RequiredArgsConstructor
+@Component
+public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
+    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
+    public static final Duration ACCESS_TOKEN_DURATION = Duration.ofHours(1); // 1시간
+
+    private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
+    private final UserService userService;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        // ✅ OAuth2 인증 사용자 정보 가져오기
+        CustomOAuth2User customUser = (CustomOAuth2User) authentication.getPrincipal();
+        String email = customUser.getEmail();
+        UserEntity user = userService.findByEmail(email);
+
+        // ✅ 세션에 loginType="oauth" 설정 (프론트에서 소셜 로그인 여부 파악 가능)
+        request.getSession().setAttribute("loginType", "oauth");
+
+        // ✅ Refresh Token 생성 & 저장
+        String refreshToken = tokenProvider.generateToken(user, REFRESH_TOKEN_DURATION);
+        saveRefreshToken(user.getId(), refreshToken);
+        addRefreshTokenToCookie(request, response, refreshToken);
+
+        // ✅ Access Token 생성 (프론트에서 가져갈 예정)
+        String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
+
+        // ✅ 로그인 후 `/login?oauth-success=true`로 리디렉트 → 프론트에서 `/api/oauth-token`을 호출하여 `access_token`을 가져감
+        response.sendRedirect("/login?oauth-success=true&user=" + user.getEmail());
+    }
+
+    // ✅ Refresh Token을 DB에 저장
+    private void saveRefreshToken(Long userId, String newRefreshToken) {
+        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
+                .map(entity -> entity.update(newRefreshToken))
+                .orElse(new RefreshToken(userId, newRefreshToken));
+
+        refreshTokenRepository.save(refreshToken);
+    }
+
+    // ✅ Refresh Token을 쿠키에 저장
+    private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
+        int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds();
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME);
+        CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
+    }
+}
+
+
+ */

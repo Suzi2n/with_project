@@ -17,4 +17,16 @@ public class UserViewController {
     public String signup(){
         return "signup";
     }
+
+
+    // 홈 뷰
+    @GetMapping("/home")
+    public String home(){
+        return "home";
+    }
+
+    @GetMapping("/article")
+    public String article() {
+        return "article"; // templates 폴더 내 article.html 파일을 렌더링
+    }
 }

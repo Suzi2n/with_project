@@ -31,7 +31,8 @@ public class WebSecurityConfig {     // 일반로그인 구현
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")           // (기본값 "/logout", POST 요청)
-                        .logoutSuccessUrl("/login")     // 로그아웃 성공 시 이동할 페이지
+                    //   .logoutSuccessUrl("/login")     // 로그아웃 성공 시 이동할 페이지      2025-02-11 수정
+                        .logoutSuccessUrl("/home")
                         .invalidateHttpSession(true)    // 세션 무효화
                         .permitAll()                    // 로그아웃 URL은 인증없이 접근 가능
                 )
